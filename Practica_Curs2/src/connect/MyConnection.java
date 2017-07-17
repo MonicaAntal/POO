@@ -1,20 +1,19 @@
 package connect;
-
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import modelsql.Vehicle;
-
 
 public class MyConnection {
 
 	private static final String HOST = "jdbc:mysql://localhost:3306";
 	private static final String DBNAME = "unitbv";
 	private static final String DBUSER = "root";
-	private static final String DBPASS = "";
+	private static final String DBPASS = "root";
 	private static final String DBURL = HOST + "/" + DBNAME + "?autoReconnect=true&useSSL=false";
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	
@@ -75,6 +74,7 @@ public class MyConnection {
 		return audi;
 	}
 
+	//inchide conexiunea cu baza de date
 	private void flush(ResultSet resultSet, Statement statement, Connection conn) {
 		try{
 			if(resultSet != null)
@@ -89,5 +89,33 @@ public class MyConnection {
 		catch(SQLException e){
 			e.printStackTrace();
 		}
+}
+	//exemplu cu ArrayList
+	public ArrayList<Vehicle> getVehicles(){
+		String sqlStatement = "select * from unitbv.vehicle";
+		ArrayList<Vehicle> audiList = new ArrayList<Vehicle>();
+		Vehicle vehicle = null;
+		connect();
+		try {
+			result = stmt.executeQuery(sqlStatement);
+			System.out.println("Statement executed corectly!!");
+			
+			while(result.next()){
+				vehicle = new Vehicle();
+				vehicle.setBrand(result.getString("brand"));
+				vehicle.setColor(result.getString("color"));
+				vehicle.setHp(result.getInt("km"));
+				vehicle.setKm(result.getInt("km"));
+				vehicle.setProddate(result.getDate("proddate"));
+				audiList.add(vehicle);
+			}
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		finally{
+			flush(result, stmt, conn);
+		}
+		return audiList;
 	}
 }
