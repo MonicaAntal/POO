@@ -23,12 +23,13 @@ public class MyConnection {
 	
 	
 	private String brand = " ";
+	private int id;
 	
 	
 	public MyConnection(){
 		
 	}
-	
+	//metoda care face conexiunea cu DB
 	public static void connect(){
 		System.out.println("Driver not initialized yet");
 		try {
@@ -118,4 +119,73 @@ public class MyConnection {
 		}
 		return audiList;
 	}
+	
+	private void closeConnection(Statement stmt, Connection conn){
+		try{
+			if(stmt != null)
+				stmt.close();
+			else  if(conn != null){
+				conn.close();
+			}
+			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+	//metoda de stergere masina
+	public Vehicle deleteCar(int idVehicle){
+		String query = "DELETE FROM unitbv.vehicle WHERE id='"+idVehicle+"';";
+		connect();
+		try{
+			stmt.executeUpdate(query);
+			System.out.println("The car with id "+idVehicle+" is deleted!");
+			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		finally{
+			closeConnection(stmt,conn);
+		}
+		return null;
+	}
+	//metoda de adaugare masina
+	public Vehicle addCar(String brand, int hp, String proddate, int km, String color){
+		String sqlAdd = "INSERT INTO unitbv.vehicle (brand, hp, proddate, km, color) VALUES ('"+brand+"', "+hp+", '"+proddate+"', "+km+", '"+color+"')";
+		Vehicle vehicle = null;
+		try {
+			stmt = conn.createStatement();
+			
+			stmt.executeUpdate(sqlAdd);
+			System.out.println("A new row was added!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			closeConnection(stmt, conn);
+			System.out.println("Connection closed.");
+		}
+		return vehicle;
+	}
+	
+	//modifica date din tabel
+	public Vehicle updateCar(int id, String brand, int km, String color){
+		String sqlUpdate = "UPDATE unitbv.vehicle set brand= '"+brand+"', km= '"+km+"', color= '"+color+"' WHERE id= '"+id+"';";
+		Vehicle vehicle = null;
+		
+		try {
+			stmt = conn.createStatement();
+			
+			stmt.executeUpdate(sqlUpdate);
+			System.out.println("Row no. "+id+" was updated.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			closeConnection(stmt, conn);
+		}
+		return vehicle;
+	}
+	
 }
